@@ -18,10 +18,15 @@ import java.util.List;
 public abstract class Port {
 
     /** Název portu (např. "a", "b", "out") */
-    private String name;
+    protected String name;
 
     /** Blok, kterému port patří */
-    private Block owner;
+    protected Block owner;
+
+    public Port(String name, Block owner){
+        this.name = name;
+        this.owner = owner;
+    }
 
     /**
      * Vstupní port bloku.
@@ -31,6 +36,10 @@ public abstract class Port {
 
         private Double value = 0.0; // poslední přijatá hodnota
         private OutputPort source;
+
+        public InputPort(String name, Block owner){
+            super(name, owner);
+        }
 
         /**
          * Připojí vstupní port na výstupní blok zadaného bloku.
@@ -43,6 +52,21 @@ public abstract class Port {
             source.addConnection(this);
         }
 
+
+        public boolean isConnected(){
+            return source != null;
+        }
+
+        public void update(){
+            if (source != null){
+                this.value = source.getValue();
+            }
+            owner.calculate();
+        }
+        
+        public double getValue() {
+            return value;
+        }
     }
 
     /**
@@ -59,8 +83,28 @@ public abstract class Port {
          * Vrátí aktuální hodnotu výstupního portu. 
          * @return Hodnota portu.
          */
+        public OutputPort(String name, Block owner){
+            super(name, owner);
+        }
+        
         public double getValue() {
             return value;
         }
+
+        public void setValue(double value) {
+            this.value = value;
+            for (InputPort input : connections){
+                input.update();
+            }
+        }
+        
+        public boolean isConnected(){
+            return !connections.isEmpty();
+        }
+        
+        public void addConnection(InputPort port){
+            connections.add(port);
+        }
+        
     }
 }

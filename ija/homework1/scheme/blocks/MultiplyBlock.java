@@ -17,6 +17,13 @@ public class MultiplyBlock extends Block {
      * @param name Název blok
      * @throws IllegalArgumentException pokud není zadán název bloku
      */
-    public MultiplyBlock(String name) { super(name, "a", "b"); }
+    public MultiplyBlock(String name) { 
+        super(name, "a", "b"); 
+    }
 
+
+    @Override
+    protected double compute(Map<String, Double> inputs) {
+        return inputs.get("a") * inputs.get("b");
+    }
 }
